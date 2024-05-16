@@ -1,0 +1,11 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+}
+
+#myCanvas {
+    background-color:#fafcff ;
+    border-bottom: 2px solid black;
+    width: 800px;
+    height: 400px;
+}
