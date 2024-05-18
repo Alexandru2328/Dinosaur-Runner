@@ -2,7 +2,7 @@ let board;
 let ctx;
 const dinoX = 10;
 const dinoY = 90;
-let dinoRect = { x: dinoX, y: dinoY, w: 27, h: 40 };
+let dinoRect = { x: dinoX, y: dinoY, w: 30, h: 55 };
 let walkingFrame = 0;
 let gameStatus = false;
 let isJumping = false;
@@ -22,9 +22,10 @@ function newGame() {
 }
 
 function obstacleEffect(obj) {
-  if (obj.x < -50) {
+  let aux = 50;
+  if (obj.x < -aux) {
     obstacleList.splice(obj, 1);
-    score += 50;
+    score += aux;
   }
   if (gameStatus) {
     ctx.clearRect(obj.x + 2, obj.y, obj.w, obj.h);
@@ -52,20 +53,24 @@ function spawnObstacle() {
   function crouch(e) {
     if (e.code === "ArrowDown" && gameStatus && !isJumping) {
       isCrouching = true;
-      ctx.clearRect(dinoRect.x, dinoRect.y, 50, 80)
+      let crouchCleerW = 50;
+      let crouchCleerH = 80;
+      let crouchW = 40;
+      let crouchH = 30;
+      ctx.clearRect(dinoRect.x, dinoRect.y, crouchCleerW, crouchCleerH)
       dinoRect.y = 120;
       let newDinoImg = new Image(); 
       newDinoImg.src = "img/dino-duck1.png";
       newDinoImg.onload = function() {
-        ctx.drawImage(newDinoImg, dinoX, dinoRect.y, 40, 30);
+        ctx.drawImage(newDinoImg, dinoX, dinoRect.y, crouchW, crouchH);
       }
       setTimeout(function() {
-        ctx.clearRect(dinoRect.x, dinoRect.y, 50, 80)
+        ctx.clearRect(dinoRect.x, dinoRect.y, crouchCleerW, crouchCleerH)
         dinoRect.y = 90;
         let newDinoImg = new Image(); 
         newDinoImg.src = "img/dino2.png";
         newDinoImg.onload = function() {
-          ctx.drawImage(newDinoImg, dinoX, dinoRect.y, 30, 55);
+          ctx.drawImage(newDinoImg, dinoX, dinoRect.y, dinoRect.w, dinoRect.h);
         }
         isCrouching = false;
       }, 1200);
@@ -74,15 +79,15 @@ function spawnObstacle() {
   
   function jumpEffect(timestamp) {
     if (gameStatus) {
-      const jumpDuration = 1400; 
+      const jumpDuration = 1000; 
       const jumpHeight = 80; 
       let progress = (timestamp - jumpStartTime) / jumpDuration;
       dinoRect.y = dinoY - jumpHeight * (4 * progress * (1 - progress));
       let newDinoImg = new Image(); 
       newDinoImg.src = "img/dino2.png";
       newDinoImg.onload = function() {
-        ctx.clearRect(dinoX, dinoRect.y -10 , 30, 70);
-        ctx.drawImage(newDinoImg, dinoX, dinoRect.y, 30, 55);
+        ctx.clearRect(dinoX, dinoRect.y -10 , dinoRect.w, dinoRect.h);
+        ctx.drawImage(newDinoImg, dinoX, dinoRect.y, dinoRect.w, dinoRect.h);
       };
       if (progress >= 1) {
         isJumping = false;
@@ -111,8 +116,8 @@ function spawnObstacle() {
       let dinoImg = new Image();
       dinoImg.src = dinoImgSrc;
       dinoImg.onload = function() {
-        ctx.clearRect(dinoX, dinoRect.y, 50, 140);
-        ctx.drawImage(dinoImg, dinoX, dinoY, 30, 55);
+        ctx.clearRect(dinoX, dinoRect.y, dinoRect.w, dinoRect.h);
+        ctx.drawImage(dinoImg, dinoX, dinoY, dinoRect.w, dinoRect.h);
       };
       ++walkingFrame;
     }
@@ -132,25 +137,24 @@ function spawnObstacle() {
       ++score;
       let myText = document.getElementById("text");
       for (let i = 0; i < obstacleList.length; ++i) {
-        obstacleList[i].x -= 2;
+        obstacleList[i].x -= 2,8;
         obstacleEffect(obstacleList[i], i);
         if (checkCollision(dinoRect, obstacleList[i])) {
-          console.log("Collision detected");
           let dinoImg = new Image();
-        dinoImg.src = "img/dino-dead.png";
-        dinoImg.onload = function() {
-        ctx.clearRect(dinoRect.x, dinoRect.y, dinoRect.w, dinoRect.h);
-        ctx.drawImage(dinoImg, dinoRect.x, dinoRect.y, 30, 55);
-        myText.innerHTML = "GAME OVER !!<br>" + "SCORE: " + score;
-        let button = document.getElementById("startGame");
-      button.textContent = "NEW GAME";
-      button.setAttribute('onclick',
-        `newGame()`);
-      }
+          dinoImg.src = "img/dino-dead.png";
+          dinoImg.onload = function() {
+          ctx.clearRect(dinoRect.x, dinoRect.y, dinoRect.w, dinoRect.h);
+          ctx.drawImage(dinoImg, dinoRect.x, dinoRect.y, dinoRect.w, dinoRect.h);
+          myText.innerHTML = "GAME OVER !!<br>" + "SCORE: " + score;
+          let button = document.getElementById("startGame");
+          button.textContent = "NEW GAME";
+          button.setAttribute('onclick',
+            `newGame()`);
+          }
           gameStatus = false;
         }
       }
-      myText.innerHTML = "SCORE: " + score;
+        myText.innerHTML = "SCORE: " + score;
     }
   }
 
@@ -158,17 +162,15 @@ function spawnObstacle() {
     gameStatus = true;
     let button = document.getElementById("startGame");
     button.textContent = "PAUSE";
-    button.setAttribute('onclick',
-        `pauseGame()`);
-        isJumping = false;
+    button.setAttribute('onclick', `pauseGame()`);
+    isJumping = false;
 }
 
 function pauseGame() {
     gameStatus = false;
     let button = document.getElementById("startGame");
     button.textContent = "RESUME";
-    button.setAttribute('onclick',
-        `resumeGame()`);
+    button.setAttribute('onclick', `resumeGame()`);
 }
   
   function startGame() {
@@ -178,16 +180,15 @@ function pauseGame() {
     let dinoImg = new Image();
     dinoImg.src = "img/dino2.png";
     dinoImg.onload = function() {
-      ctx.drawImage(dinoImg, dinoX, dinoY, 30, 55);
+      ctx.drawImage(dinoImg, dinoX, dinoY, dinoRect.w, dinoRect.h);
     };
     let startButton = document.getElementById("startGame");
     startButton.textContent = "PAUSE";
-    startButton.setAttribute('onclick',
-        `pauseGame()`);
+    startButton.setAttribute('onclick', `pauseGame()`);
   }
   
 setInterval(spawnObstacle, 2600);
-setInterval(gameUpdate, 27);
+setInterval(gameUpdate, 20);
 setInterval(walkingAnimation, 200)
 document.addEventListener("keyup", jump);
 document.addEventListener("keydown", crouch);
